@@ -35,17 +35,17 @@
     "dist"
   ],
   "devDependencies": {
-    "@types/node": "^24.7.0",
-    "@types/react": "^19.1.2",
+    "@types/node": "^24.12.0",
+    "@types/react": "19.2.14",
     "@unsent/typescript-config": "workspace:*",
-    "openapi-typescript": "^7.6.1",
-    "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
-    "@unsent/vitest-config": "workspace:*"
+    "@unsent/vitest-config": "workspace:*",
+    "openapi-typescript": "^7.13.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "@react-email/render": "^1.0.6",
-    "react": "^19.1.0",
-    "vitest": "^2.1.8"
+    "@react-email/render": "^2.0.4",
+    "react": "^19.2.4",
+    "vitest": "^4.1.0"
   }
 }
