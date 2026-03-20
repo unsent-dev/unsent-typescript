@@ -299,6 +299,42 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/domains/{id}/routes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description List provider routes for a domain */
+        get: operations["listDomainRoutes"];
+        put?: never;
+        /** @description Add a provider route to a domain */
+        post: operations["addDomainRoute"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/domains/{id}/routes/{routeId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description Remove a provider route from a domain */
+        delete: operations["deleteDomainRoute"];
+        options?: never;
+        head?: never;
+        /** @description Update a provider route (weight, tracking settings) */
+        patch: operations["updateDomainRoute"];
+        trace?: never;
+    };
     "/v1/emails/bounces": {
         parameters: {
             query?: never;
@@ -360,7 +396,8 @@ export interface paths {
         /** @description Retrieve a list of sent emails */
         get: operations["listEmails"];
         put?: never;
-        /** @description Send an email.
+        /**
+         * @description Send an email.
          *
          *       You can send an email by providing the `subject`, `html`, and `text` directly, or by using a `templateId`.
          *
@@ -369,7 +406,7 @@ export interface paths {
          *       - You can override the template's subject or body by providing them in the request.
          *       - Use the `variables` object to replace placeholders in the template (e.g. `{{name}}`).
          *       - The `templateId` must belong to your team.
-         *        */
+         */
         post: operations["sendEmail"];
         delete?: never;
         options?: never;
@@ -733,6 +770,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/webhooks/sendgrid/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Receive SendGrid event webhooks */
+        post: operations["sendgridWebhookEvents"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/webhooks/ses/events": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** @description Receive SES event webhooks via SNS notifications */
+        post: operations["sesWebhookEvents"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/v1/team": {
         parameters: {
             query?: never;
@@ -762,6 +833,41 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/provider-connections": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** @description Retrieve a list of provider connections */
+        get: operations["getProviderConnections"];
+        put?: never;
+        /** @description Create a new provider connection */
+        post: operations["createProviderConnection"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/provider-connections/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** @description Delete a provider connection by ID */
+        delete: operations["deleteProviderConnection"];
         options?: never;
         head?: never;
         patch?: never;
@@ -1374,92 +1480,114 @@ export interface operations {
                          * @example example.com
                          */
                         name: string;
-                        /**
-                         * @description The ID of the team
-                         * @example jonVNF8M+EbJObaRAz2XBHnoJ6Add/tazP9lfOiPJ3E=
-                         */
+                        /** @description The ID of the team */
                         teamId: string;
-                        /** @description The status of the domain */
-                        status: string;
                         /**
-                         * @description The region of the domain
-                         * @default us-east-1
-                         * @example us-east-1
-                         */
-                        region: string;
-                        /**
-                         * @description Whether click tracking is enabled
+                         * @description Whether auto-routing is enabled
                          * @default false
-                         * @example false
                          */
-                        clickTracking: boolean;
-                        /**
-                         * @description Whether open tracking is enabled
-                         * @default false
-                         * @example false
-                         */
-                        openTracking: boolean;
-                        /** @description The public key of the domain */
-                        publicKey: string;
-                        /** @description The DKIM status of the domain */
-                        dkimStatus?: string | null;
-                        /** @description The SPF details of the domain */
-                        spfDetails?: string | null;
+                        autoRouting: boolean;
+                        /** @description The provider routes for this domain */
+                        routes: {
+                            /** @description The ID of the route */
+                            id: string;
+                            /** @description The ID of the domain */
+                            domainId: string;
+                            /** @description The ID of the provider connection */
+                            providerConnectionId: string;
+                            /**
+                             * @description Relative routing weight
+                             * @example 100
+                             */
+                            weight: number;
+                            /** @description Whether the route is active */
+                            isActive: boolean;
+                            /** @description The status of the domain */
+                            status: string;
+                            /**
+                             * @description The email provider for this route
+                             * @example ses
+                             * @enum {string}
+                             */
+                            provider: "ses" | "sendgrid";
+                            /**
+                             * @description The region of the provider
+                             * @default us-east-1
+                             * @example us-east-1
+                             */
+                            region: string;
+                            /**
+                             * @description Whether click tracking is enabled
+                             * @default false
+                             */
+                            clickTracking: boolean;
+                            /**
+                             * @description Whether open tracking is enabled
+                             * @default false
+                             */
+                            openTracking: boolean;
+                            /** @description The DKIM public key */
+                            publicKey?: string | null;
+                            /** @description The DKIM verification status */
+                            dkimStatus?: string | null;
+                            /** @description The SPF verification details */
+                            spfDetails?: string | null;
+                            /**
+                             * @description Whether DMARC is added
+                             * @default false
+                             */
+                            dmarcAdded: boolean;
+                            /**
+                             * @description Whether the route is being verified
+                             * @default false
+                             */
+                            isVerifying: boolean;
+                            /** @description The verification error message */
+                            errorMessage?: string | null;
+                            /** @description The subdomain */
+                            subdomain?: string | null;
+                            /** @description The DNS records for this route */
+                            dnsRecords: {
+                                /**
+                                 * @description DNS record type
+                                 * @example TXT
+                                 * @enum {string}
+                                 */
+                                type: "MX" | "TXT" | "CNAME";
+                                /**
+                                 * @description DNS record name
+                                 * @example mail
+                                 */
+                                name: string;
+                                /**
+                                 * @description DNS record value
+                                 * @example v=spf1 include:amazonses.com ~all
+                                 */
+                                value: string;
+                                /**
+                                 * @description DNS record TTL
+                                 * @example Auto
+                                 */
+                                ttl: string;
+                                /**
+                                 * @description DNS record priority
+                                 * @example 10
+                                 */
+                                priority?: string | null;
+                                /** @description The status of the domain */
+                                status: string;
+                                /** @description Whether the record is recommended */
+                                recommended?: boolean;
+                            }[];
+                            /** @description The creation date */
+                            createdAt: string;
+                            /** @description The last update date */
+                            updatedAt: string;
+                        }[];
                         /** @description The creation date of the domain */
                         createdAt: string;
                         /** @description The last update date of the domain */
                         updatedAt: string;
-                        /**
-                         * @description Whether DMARC is added
-                         * @default false
-                         */
-                        dmarcAdded: boolean;
-                        /**
-                         * @description Whether the domain is verifying
-                         * @default false
-                         */
-                        isVerifying: boolean;
-                        /** @description The error message of the domain */
-                        errorMessage?: string | null;
-                        /** @description The subdomain of the domain */
-                        subdomain?: string | null;
-                        /** @description The verification error of the domain */
-                        verificationError?: string | null;
-                        /** @description The last checked time of the domain */
-                        lastCheckedTime?: string | null;
-                        /** @description The DNS records of the domain */
-                        dnsRecords: {
-                            /**
-                             * @description DNS record type
-                             * @example TXT
-                             * @enum {string}
-                             */
-                            type: "MX" | "TXT";
-                            /**
-                             * @description DNS record name
-                             * @example mail
-                             */
-                            name: string;
-                            /**
-                             * @description DNS record value
-                             * @example v=spf1 include:amazonses.com ~all
-                             */
-                            value: string;
-                            /**
-                             * @description DNS record TTL
-                             * @example Auto
-                             */
-                            ttl: string;
-                            /**
-                             * @description DNS record priority
-                             * @example 10
-                             */
-                            priority?: string | null;
-                            /** @description The status of the domain */
-                            status: string;
-                            /** @description Whether the record is recommended */
-                            recommended?: boolean;
-                        }[];
                     }[];
                 };
             };
@@ -1476,7 +1604,8 @@ export interface operations {
             content: {
                 "application/json": {
                     name: string;
-                    region: string;
+                    /** Format: uuid */
+                    providerConnectionId: string;
                 };
             };
         };
@@ -1498,92 +1627,114 @@ export interface operations {
                          * @example example.com
                          */
                         name: string;
-                        /**
-                         * @description The ID of the team
-                         * @example jonVNF8M+EbJObaRAz2XBHnoJ6Add/tazP9lfOiPJ3E=
-                         */
+                        /** @description The ID of the team */
                         teamId: string;
-                        /** @description The status of the domain */
-                        status: string;
                         /**
-                         * @description The region of the domain
-                         * @default us-east-1
-                         * @example us-east-1
-                         */
-                        region: string;
-                        /**
-                         * @description Whether click tracking is enabled
+                         * @description Whether auto-routing is enabled
                          * @default false
-                         * @example false
                          */
-                        clickTracking: boolean;
-                        /**
-                         * @description Whether open tracking is enabled
-                         * @default false
-                         * @example false
-                         */
-                        openTracking: boolean;
-                        /** @description The public key of the domain */
-                        publicKey: string;
-                        /** @description The DKIM status of the domain */
-                        dkimStatus?: string | null;
-                        /** @description The SPF details of the domain */
-                        spfDetails?: string | null;
+                        autoRouting: boolean;
+                        /** @description The provider routes for this domain */
+                        routes: {
+                            /** @description The ID of the route */
+                            id: string;
+                            /** @description The ID of the domain */
+                            domainId: string;
+                            /** @description The ID of the provider connection */
+                            providerConnectionId: string;
+                            /**
+                             * @description Relative routing weight
+                             * @example 100
+                             */
+                            weight: number;
+                            /** @description Whether the route is active */
+                            isActive: boolean;
+                            /** @description The status of the domain */
+                            status: string;
+                            /**
+                             * @description The email provider for this route
+                             * @example ses
+                             * @enum {string}
+                             */
+                            provider: "ses" | "sendgrid";
+                            /**
+                             * @description The region of the provider
+                             * @default us-east-1
+                             * @example us-east-1
+                             */
+                            region: string;
+                            /**
+                             * @description Whether click tracking is enabled
+                             * @default false
+                             */
+                            clickTracking: boolean;
+                            /**
+                             * @description Whether open tracking is enabled
+                             * @default false
+                             */
+                            openTracking: boolean;
+                            /** @description The DKIM public key */
+                            publicKey?: string | null;
+                            /** @description The DKIM verification status */
+                            dkimStatus?: string | null;
+                            /** @description The SPF verification details */
+                            spfDetails?: string | null;
+                            /**
+                             * @description Whether DMARC is added
+                             * @default false
+                             */
+                            dmarcAdded: boolean;
+                            /**
+                             * @description Whether the route is being verified
+                             * @default false
+                             */
+                            isVerifying: boolean;
+                            /** @description The verification error message */
+                            errorMessage?: string | null;
+                            /** @description The subdomain */
+                            subdomain?: string | null;
+                            /** @description The DNS records for this route */
+                            dnsRecords: {
+                                /**
+                                 * @description DNS record type
+                                 * @example TXT
+                                 * @enum {string}
+                                 */
+                                type: "MX" | "TXT" | "CNAME";
+                                /**
+                                 * @description DNS record name
+                                 * @example mail
+                                 */
+                                name: string;
+                                /**
+                                 * @description DNS record value
+                                 * @example v=spf1 include:amazonses.com ~all
+                                 */
+                                value: string;
+                                /**
+                                 * @description DNS record TTL
+                                 * @example Auto
+                                 */
+                                ttl: string;
+                                /**
+                                 * @description DNS record priority
+                                 * @example 10
+                                 */
+                                priority?: string | null;
+                                /** @description The status of the domain */
+                                status: string;
+                                /** @description Whether the record is recommended */
+                                recommended?: boolean;
+                            }[];
+                            /** @description The creation date */
+                            createdAt: string;
+                            /** @description The last update date */
+                            updatedAt: string;
+                        }[];
                         /** @description The creation date of the domain */
                         createdAt: string;
                         /** @description The last update date of the domain */
                         updatedAt: string;
-                        /**
-                         * @description Whether DMARC is added
-                         * @default false
-                         */
-                        dmarcAdded: boolean;
-                        /**
-                         * @description Whether the domain is verifying
-                         * @default false
-                         */
-                        isVerifying: boolean;
-                        /** @description The error message of the domain */
-                        errorMessage?: string | null;
-                        /** @description The subdomain of the domain */
-                        subdomain?: string | null;
-                        /** @description The verification error of the domain */
-                        verificationError?: string | null;
-                        /** @description The last checked time of the domain */
-                        lastCheckedTime?: string | null;
-                        /** @description The DNS records of the domain */
-                        dnsRecords: {
-                            /**
-                             * @description DNS record type
-                             * @example TXT
-                             * @enum {string}
-                             */
-                            type: "MX" | "TXT";
-                            /**
-                             * @description DNS record name
-                             * @example mail
-                             */
-                            name: string;
-                            /**
-                             * @description DNS record value
-                             * @example v=spf1 include:amazonses.com ~all
-                             */
-                            value: string;
-                            /**
-                             * @description DNS record TTL
-                             * @example Auto
-                             */
-                            ttl: string;
-                            /**
-                             * @description DNS record priority
-                             * @example 10
-                             */
-                            priority?: string | null;
-                            /** @description The status of the domain */
-                            status: string;
-                            /** @description Whether the record is recommended */
-                            recommended?: boolean;
-                        }[];
                     };
                 };
             };
@@ -1822,92 +1973,114 @@ export interface operations {
                          * @example example.com
                          */
                         name: string;
-                        /**
-                         * @description The ID of the team
-                         * @example jonVNF8M+EbJObaRAz2XBHnoJ6Add/tazP9lfOiPJ3E=
-                         */
+                        /** @description The ID of the team */
                         teamId: string;
-                        /** @description The status of the domain */
-                        status: string;
                         /**
-                         * @description The region of the domain
-                         * @default us-east-1
-                         * @example us-east-1
-                         */
-                        region: string;
-                        /**
-                         * @description Whether click tracking is enabled
+                         * @description Whether auto-routing is enabled
                          * @default false
-                         * @example false
                          */
-                        clickTracking: boolean;
-                        /**
-                         * @description Whether open tracking is enabled
-                         * @default false
-                         * @example false
-                         */
-                        openTracking: boolean;
-                        /** @description The public key of the domain */
-                        publicKey: string;
-                        /** @description The DKIM status of the domain */
-                        dkimStatus?: string | null;
-                        /** @description The SPF details of the domain */
-                        spfDetails?: string | null;
+                        autoRouting: boolean;
+                        /** @description The provider routes for this domain */
+                        routes: {
+                            /** @description The ID of the route */
+                            id: string;
+                            /** @description The ID of the domain */
+                            domainId: string;
+                            /** @description The ID of the provider connection */
+                            providerConnectionId: string;
+                            /**
+                             * @description Relative routing weight
+                             * @example 100
+                             */
+                            weight: number;
+                            /** @description Whether the route is active */
+                            isActive: boolean;
+                            /** @description The status of the domain */
+                            status: string;
+                            /**
+                             * @description The email provider for this route
+                             * @example ses
+                             * @enum {string}
+                             */
+                            provider: "ses" | "sendgrid";
+                            /**
+                             * @description The region of the provider
+                             * @default us-east-1
+                             * @example us-east-1
+                             */
+                            region: string;
+                            /**
+                             * @description Whether click tracking is enabled
+                             * @default false
+                             */
+                            clickTracking: boolean;
+                            /**
+                             * @description Whether open tracking is enabled
+                             * @default false
+                             */
+                            openTracking: boolean;
+                            /** @description The DKIM public key */
+                            publicKey?: string | null;
+                            /** @description The DKIM verification status */
+                            dkimStatus?: string | null;
+                            /** @description The SPF verification details */
+                            spfDetails?: string | null;
+                            /**
+                             * @description Whether DMARC is added
+                             * @default false
+                             */
+                            dmarcAdded: boolean;
+                            /**
+                             * @description Whether the route is being verified
+                             * @default false
+                             */
+                            isVerifying: boolean;
+                            /** @description The verification error message */
+                            errorMessage?: string | null;
+                            /** @description The subdomain */
+                            subdomain?: string | null;
+                            /** @description The DNS records for this route */
+                            dnsRecords: {
+                                /**
+                                 * @description DNS record type
+                                 * @example TXT
+                                 * @enum {string}
+                                 */
+                                type: "MX" | "TXT" | "CNAME";
+                                /**
+                                 * @description DNS record name
+                                 * @example mail
+                                 */
+                                name: string;
+                                /**
+                                 * @description DNS record value
+                                 * @example v=spf1 include:amazonses.com ~all
+                                 */
+                                value: string;
+                                /**
+                                 * @description DNS record TTL
+                                 * @example Auto
+                                 */
+                                ttl: string;
+                                /**
+                                 * @description DNS record priority
+                                 * @example 10
+                                 */
+                                priority?: string | null;
+                                /** @description The status of the domain */
+                                status: string;
+                                /** @description Whether the record is recommended */
+                                recommended?: boolean;
+                            }[];
+                            /** @description The creation date */
+                            createdAt: string;
+                            /** @description The last update date */
+                            updatedAt: string;
+                        }[];
                         /** @description The creation date of the domain */
                         createdAt: string;
                         /** @description The last update date of the domain */
                         updatedAt: string;
-                        /**
-                         * @description Whether DMARC is added
-                         * @default false
-                         */
-                        dmarcAdded: boolean;
-                        /**
-                         * @description Whether the domain is verifying
-                         * @default false
-                         */
-                        isVerifying: boolean;
-                        /** @description The error message of the domain */
-                        errorMessage?: string | null;
-                        /** @description The subdomain of the domain */
-                        subdomain?: string | null;
-                        /** @description The verification error of the domain */
-                        verificationError?: string | null;
-                        /** @description The last checked time of the domain */
-                        lastCheckedTime?: string | null;
-                        /** @description The DNS records of the domain */
-                        dnsRecords: {
-                            /**
-                             * @description DNS record type
-                             * @example TXT
-                             * @enum {string}
-                             */
-                            type: "MX" | "TXT";
-                            /**
-                             * @description DNS record name
-                             * @example mail
-                             */
-                            name: string;
-                            /**
-                             * @description DNS record value
-                             * @example v=spf1 include:amazonses.com ~all
-                             */
-                            value: string;
-                            /**
-                             * @description DNS record TTL
-                             * @example Auto
-                             */
-                            ttl: string;
-                            /**
-                             * @description DNS record priority
-                             * @example 10
-                             */
-                            priority?: string | null;
-                            /** @description The status of the domain */
-                            status: string;
-                            /** @description Whether the record is recommended */
-                            recommended?: boolean;
-                        }[];
                     };
                 };
             };
@@ -1949,6 +2122,307 @@ export interface operations {
                 };
                 content: {
                     "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    listDomainRoutes: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of provider routes */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The ID of the route */
+                        id: string;
+                        /** @description The ID of the domain */
+                        domainId: string;
+                        /** @description The ID of the provider connection */
+                        providerConnectionId: string;
+                        /**
+                         * @description Relative routing weight
+                         * @example 100
+                         */
+                        weight: number;
+                        /** @description Whether the route is active */
+                        isActive: boolean;
+                        /** @description The status of the domain */
+                        status: string;
+                        /**
+                         * @description The email provider for this route
+                         * @example ses
+                         * @enum {string}
+                         */
+                        provider: "ses" | "sendgrid";
+                        /**
+                         * @description The region of the provider
+                         * @default us-east-1
+                         * @example us-east-1
+                         */
+                        region: string;
+                        /**
+                         * @description Whether click tracking is enabled
+                         * @default false
+                         */
+                        clickTracking: boolean;
+                        /**
+                         * @description Whether open tracking is enabled
+                         * @default false
+                         */
+                        openTracking: boolean;
+                        /** @description The DKIM public key */
+                        publicKey?: string | null;
+                        /** @description The DKIM verification status */
+                        dkimStatus?: string | null;
+                        /** @description The SPF verification details */
+                        spfDetails?: string | null;
+                        /**
+                         * @description Whether DMARC is added
+                         * @default false
+                         */
+                        dmarcAdded: boolean;
+                        /**
+                         * @description Whether the route is being verified
+                         * @default false
+                         */
+                        isVerifying: boolean;
+                        /** @description The verification error message */
+                        errorMessage?: string | null;
+                        /** @description The subdomain */
+                        subdomain?: string | null;
+                        /** @description The DNS records for this route */
+                        dnsRecords: {
+                            /**
+                             * @description DNS record type
+                             * @example TXT
+                             * @enum {string}
+                             */
+                            type: "MX" | "TXT" | "CNAME";
+                            /**
+                             * @description DNS record name
+                             * @example mail
+                             */
+                            name: string;
+                            /**
+                             * @description DNS record value
+                             * @example v=spf1 include:amazonses.com ~all
+                             */
+                            value: string;
+                            /**
+                             * @description DNS record TTL
+                             * @example Auto
+                             */
+                            ttl: string;
+                            /**
+                             * @description DNS record priority
+                             * @example 10
+                             */
+                            priority?: string | null;
+                            /** @description The status of the domain */
+                            status: string;
+                            /** @description Whether the record is recommended */
+                            recommended?: boolean;
+                        }[];
+                        /** @description The creation date */
+                        createdAt: string;
+                        /** @description The last update date */
+                        updatedAt: string;
+                    }[];
+                };
+            };
+        };
+    };
+    addDomainRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** Format: uuid */
+                    providerConnectionId: string;
+                    /** @default 100 */
+                    weight?: number;
+                };
+            };
+        };
+        responses: {
+            /** @description The created provider route */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        /** @description The ID of the route */
+                        id: string;
+                        /** @description The ID of the domain */
+                        domainId: string;
+                        /** @description The ID of the provider connection */
+                        providerConnectionId: string;
+                        /**
+                         * @description Relative routing weight
+                         * @example 100
+                         */
+                        weight: number;
+                        /** @description Whether the route is active */
+                        isActive: boolean;
+                        /** @description The status of the domain */
+                        status: string;
+                        /**
+                         * @description The email provider for this route
+                         * @example ses
+                         * @enum {string}
+                         */
+                        provider: "ses" | "sendgrid";
+                        /**
+                         * @description The region of the provider
+                         * @default us-east-1
+                         * @example us-east-1
+                         */
+                        region: string;
+                        /**
+                         * @description Whether click tracking is enabled
+                         * @default false
+                         */
+                        clickTracking: boolean;
+                        /**
+                         * @description Whether open tracking is enabled
+                         * @default false
+                         */
+                        openTracking: boolean;
+                        /** @description The DKIM public key */
+                        publicKey?: string | null;
+                        /** @description The DKIM verification status */
+                        dkimStatus?: string | null;
+                        /** @description The SPF verification details */
+                        spfDetails?: string | null;
+                        /**
+                         * @description Whether DMARC is added
+                         * @default false
+                         */
+                        dmarcAdded: boolean;
+                        /**
+                         * @description Whether the route is being verified
+                         * @default false
+                         */
+                        isVerifying: boolean;
+                        /** @description The verification error message */
+                        errorMessage?: string | null;
+                        /** @description The subdomain */
+                        subdomain?: string | null;
+                        /** @description The DNS records for this route */
+                        dnsRecords: {
+                            /**
+                             * @description DNS record type
+                             * @example TXT
+                             * @enum {string}
+                             */
+                            type: "MX" | "TXT" | "CNAME";
+                            /**
+                             * @description DNS record name
+                             * @example mail
+                             */
+                            name: string;
+                            /**
+                             * @description DNS record value
+                             * @example v=spf1 include:amazonses.com ~all
+                             */
+                            value: string;
+                            /**
+                             * @description DNS record TTL
+                             * @example Auto
+                             */
+                            ttl: string;
+                            /**
+                             * @description DNS record priority
+                             * @example 10
+                             */
+                            priority?: string | null;
+                            /** @description The status of the domain */
+                            status: string;
+                            /** @description Whether the record is recommended */
+                            recommended?: boolean;
+                        }[];
+                        /** @description The creation date */
+                        createdAt: string;
+                        /** @description The last update date */
+                        updatedAt: string;
+                    };
+                };
+            };
+        };
+    };
+    deleteDomainRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                routeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Route deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
+                };
+            };
+        };
+    };
+    updateDomainRoute: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+                routeId: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    weight?: number;
+                    clickTracking?: boolean;
+                    openTracking?: boolean;
+                };
+            };
+        };
+        responses: {
+            /** @description Route updated successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": {
+                        success: boolean;
+                    };
                 };
             };
         };
@@ -2052,13 +2526,15 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Pass the optional Idempotency-Key header to make the request safe to retry. The key can be up to 256 characters. The server stores the canonical request body and behaves as follows:
+                /**
+                 * @description Pass the optional Idempotency-Key header to make the request safe to retry. The key can be up to 256 characters. The server stores the canonical request body and behaves as follows:
                  *
                  *     - Same key + same request body → returns the original emailId with 200 OK without re-sending.
                  *     - Same key + different request body → returns 409 Conflict with code: NOT_UNIQUE so you can detect the mismatch.
                  *     - Same key while another request is still being processed → returns 409 Conflict; retry after a short delay or once the first request completes.
                  *
-                 *     Entries expire after 24 hours. Use a unique key per logical send (for example, an order or signup ID). */
+                 *     Entries expire after 24 hours. Use a unique key per logical send (for example, an order or signup ID).
+                 */
                 "Idempotency-Key"?: string;
             };
             path?: never;
@@ -2108,13 +2584,15 @@ export interface operations {
         parameters: {
             query?: never;
             header?: {
-                /** @description Pass the optional Idempotency-Key header to make the request safe to retry. The key can be up to 256 characters. The server stores the canonical request body and behaves as follows:
+                /**
+                 * @description Pass the optional Idempotency-Key header to make the request safe to retry. The key can be up to 256 characters. The server stores the canonical request body and behaves as follows:
                  *
                  *     - Same key + same request body → returns the original emailId with 200 OK without re-sending.
                  *     - Same key + different request body → returns 409 Conflict with code: NOT_UNIQUE so you can detect the mismatch.
                  *     - Same key while another request is still being processed → returns 409 Conflict; retry after a short delay or once the first request completes.
                  *
-                 *     Entries expire after 24 hours. Use a unique key per logical send (for example, an order or signup ID). */
+                 *     Entries expire after 24 hours. Use a unique key per logical send (for example, an order or signup ID).
+                 */
                 "Idempotency-Key"?: string;
             };
             path?: never;
@@ -3045,7 +3523,7 @@ export interface operations {
                 page?: number;
                 limit?: number;
                 search?: string;
-                reason?: "HARD_BOUNCE" | "COMPLAINT" | "MANUAL" | "UNSUBSCRIBE" | null;
+                reason?: "HARD_BOUNCE" | "COMPLAINT" | "MANUAL" | "UNSUBSCRIBE";
             };
             header?: never;
             path?: never;
@@ -3865,6 +4343,42 @@ export interface operations {
             };
         };
     };
+    sendgridWebhookEvents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Webhook received */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    sesWebhookEvents: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Webhook received */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
     getTeam: {
         parameters: {
             query?: never;
@@ -3966,6 +4480,91 @@ export interface operations {
                         message: string;
                         docs?: string;
                     };
+                };
+            };
+        };
+    };
+    getProviderConnections: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description List of provider connections */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>[];
+                };
+            };
+        };
+    };
+    createProviderConnection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": {
+                    /** @enum {string} */
+                    provider: "ses" | "sendgrid";
+                    name: string;
+                    credentials: {
+                        accessKeyId?: string;
+                        secretAccessKey?: string;
+                        region?: string;
+                        apiKey?: string;
+                    };
+                };
+            };
+        };
+        responses: {
+            /** @description Provider connection created */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
+    deleteProviderConnection: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Provider connection deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+            /** @description Provider connection not found */
+            404: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
                 };
             };
         };

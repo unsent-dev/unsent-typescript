@@ -13,11 +13,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/souravsspace/unsent-typescript.git"
+    "url": "https://github.com/unsent-dev/unsent-typescript.git"
   },
   "homepage": "https://unsent.dev",
   "bugs": {
-    "url": "https://github.com/souravsspace/unsent-typescript/issues"
+    "url": "https://github.com/unsent-dev/unsent-typescript/issues"
   },
   "keywords": [
     "unsent",
@@ -29,7 +29,7 @@
     "typescript",
     "react-email"
   ],
-  "author": "Sourav Ukil <sourav@unsent.dev>",
+  "author": "Unsent <team@unsent.dev>",
   "license": "MIT",
   "files": [
     "dist"

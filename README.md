@@ -459,5 +459,5 @@ MIT
 ## Support
 
 - [Documentation](https://docs.unsent.dev)
-- [GitHub Issues](https://github.com/souravsspace/unsent-typescript/issues)
+- [GitHub Issues](https://github.com/unsent-dev/unsent-typescript/issues)
 - [Discord Community](https://discord.gg/unsent)
