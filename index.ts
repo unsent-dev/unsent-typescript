@@ -10,3 +10,4 @@ export { Stats as stats } from "./src/stats";
 export { Activity as activity } from "./src/activity";
 export { Teams as teams } from "./src/team";
 export { System as system } from "./src/system";
+export { ProviderConnections as providerConnections } from "./src/provider-connection";

@@ -16,6 +16,7 @@ import { Stats } from "./stats";
 import { Activity } from "./activity";
 import { Teams } from "./team";
 import { System } from "./system";
+import { ProviderConnections } from "./provider-connection";
 
 const defaultBaseUrl = "https://api.unsent.dev";
 const baseUrl = `${process?.env?.UNSENT_BASE_URL ?? process?.env?.UNSENT_BASE_URL ?? defaultBaseUrl}/v1`;
@@ -44,6 +45,7 @@ export class unsent {
   readonly activity = new Activity(this);
   readonly teams = new Teams(this);
   readonly system = new System(this);
+  readonly providerConnections = new ProviderConnections(this);
 
   url = baseUrl;
 
