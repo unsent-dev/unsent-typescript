@@ -1004,6 +1004,7 @@ export interface operations {
                 };
                 content: {
                     "application/json": {
+                        id: string;
                         token: string;
                     };
                 };
