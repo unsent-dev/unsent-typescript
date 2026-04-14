@@ -1,3 +1,4 @@
+// @manual
 import type { unsent } from "./unsent";
 import type { ErrorResponse } from "./types/error";
 import type { paths } from "./types/schema";
@@ -45,6 +46,13 @@ type ListCampaignsResponseSuccess =
 
 type ListCampaignsResponse = {
   data: ListCampaignsResponseSuccess | null;
+  error: ErrorResponse | null;
+};
+
+type DeleteCampaignResponseSuccess = { success: boolean };
+
+type DeleteCampaignResponse = {
+  data: DeleteCampaignResponseSuccess | null;
   error: ErrorResponse | null;
 };
 
@@ -104,6 +112,14 @@ export class Campaigns {
     const data = await this.unsent.post<CampaignActionResponseSuccess>(
       `/campaigns/${campaignId}/resume`,
       {},
+    );
+
+    return data;
+  }
+
+  async delete(campaignId: string): Promise<DeleteCampaignResponse> {
+    const data = await this.unsent.delete<DeleteCampaignResponseSuccess>(
+      `/campaigns/${campaignId}`,
     );
 
     return data;

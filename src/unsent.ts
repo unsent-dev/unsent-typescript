@@ -19,7 +19,7 @@ import { System } from "./system";
 import { ProviderConnections } from "./provider-connection";
 
 const defaultBaseUrl = "https://api.unsent.dev";
-const baseUrl = `${process?.env?.UNSENT_BASE_URL ?? process?.env?.UNSENT_BASE_URL ?? defaultBaseUrl}/v1`;
+const baseUrl = `${process?.env?.UNSENT_BASE_URL ?? defaultBaseUrl}/v1`;
 
 function isUnsentErrorResponse(error: { error: ErrorResponse }) {
   return error.error.code !== undefined;
@@ -55,7 +55,7 @@ export class unsent {
   ) {
     if (!key) {
       if (typeof process !== "undefined" && process.env) {
-        this.key = process.env.UNSENT_API_KEY ?? process.env.UNSENT_API_KEY;
+        this.key = process.env.UNSENT_API_KEY;
       }
 
       if (!this.key) {

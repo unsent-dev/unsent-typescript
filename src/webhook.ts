@@ -1,3 +1,4 @@
+// @manual
 import type { ErrorResponse } from "./types/error";
 import type { unsent } from "./unsent";
 

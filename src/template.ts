@@ -1,3 +1,4 @@
+// @manual
 import type { ErrorResponse } from "./types/error";
 import type { paths } from "./types/schema";
 import type { unsent } from "./unsent";

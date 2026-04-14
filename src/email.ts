@@ -1,3 +1,4 @@
+// @manual
 import { render } from "@react-email/render";
 import type * as React from "react";
 import type { ErrorResponse } from "./types/error";

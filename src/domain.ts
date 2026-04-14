@@ -1,3 +1,4 @@
+// @manual
 import type { ErrorResponse } from "./types/error";
 import type { paths } from "./types/schema";
 import type { unsent } from "./unsent";
@@ -58,6 +59,44 @@ type GetDomainStatsResponseSuccess =
 
 type GetDomainStatsResponse = {
   data: GetDomainStatsResponseSuccess | null;
+  error: ErrorResponse | null;
+};
+
+type ListDomainRoutesResponseSuccess =
+  paths["/v1/domains/{id}/routes"]["get"]["responses"]["200"]["content"]["application/json"];
+
+type ListDomainRoutesResponse = {
+  data: ListDomainRoutesResponseSuccess | null;
+  error: ErrorResponse | null;
+};
+
+type AddDomainRoutePayload =
+  NonNullable<paths["/v1/domains/{id}/routes"]["post"]["requestBody"]>["content"]["application/json"];
+
+type AddDomainRouteResponseSuccess =
+  paths["/v1/domains/{id}/routes"]["post"]["responses"]["200"]["content"]["application/json"];
+
+type AddDomainRouteResponse = {
+  data: AddDomainRouteResponseSuccess | null;
+  error: ErrorResponse | null;
+};
+
+type UpdateDomainRoutePayload =
+  NonNullable<paths["/v1/domains/{id}/routes/{routeId}"]["patch"]["requestBody"]>["content"]["application/json"];
+
+type UpdateDomainRouteResponseSuccess =
+  paths["/v1/domains/{id}/routes/{routeId}"]["patch"]["responses"]["200"]["content"]["application/json"];
+
+type UpdateDomainRouteResponse = {
+  data: UpdateDomainRouteResponseSuccess | null;
+  error: ErrorResponse | null;
+};
+
+type DeleteDomainRouteResponseSuccess =
+  paths["/v1/domains/{id}/routes/{routeId}"]["delete"]["responses"]["200"]["content"]["application/json"];
+
+type DeleteDomainRouteResponse = {
+  data: DeleteDomainRouteResponseSuccess | null;
   error: ErrorResponse | null;
 };
 
@@ -129,6 +168,50 @@ export class Domains {
 
     const data = await this.unsent.get<GetDomainStatsResponseSuccess>(
       `/domains/${id}/stats${queryString}`
+    );
+
+    return data;
+  }
+
+  async listRoutes(id: string): Promise<ListDomainRoutesResponse> {
+    const data = await this.unsent.get<ListDomainRoutesResponseSuccess>(
+      `/domains/${id}/routes`,
+    );
+
+    return data;
+  }
+
+  async addRoute(
+    id: string,
+    payload: AddDomainRoutePayload,
+  ): Promise<AddDomainRouteResponse> {
+    const data = await this.unsent.post<AddDomainRouteResponseSuccess>(
+      `/domains/${id}/routes`,
+      payload,
+    );
+
+    return data;
+  }
+
+  async updateRoute(
+    id: string,
+    routeId: string,
+    payload: UpdateDomainRoutePayload,
+  ): Promise<UpdateDomainRouteResponse> {
+    const data = await this.unsent.patch<UpdateDomainRouteResponseSuccess>(
+      `/domains/${id}/routes/${routeId}`,
+      payload,
+    );
+
+    return data;
+  }
+
+  async deleteRoute(
+    id: string,
+    routeId: string,
+  ): Promise<DeleteDomainRouteResponse> {
+    const data = await this.unsent.delete<DeleteDomainRouteResponseSuccess>(
+      `/domains/${id}/routes/${routeId}`,
     );
 
     return data;

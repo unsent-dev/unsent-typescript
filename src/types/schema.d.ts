@@ -550,7 +550,8 @@ export interface paths {
         get: operations["getCampaign"];
         put?: never;
         post?: never;
-        delete?: never;
+        /** @description Delete a campaign */
+        delete: operations["deleteCampaign"];
         options?: never;
         head?: never;
         patch?: never;
@@ -876,7 +877,11 @@ export interface paths {
 }
 export type webhooks = Record<string, never>;
 export interface components {
-    schemas: never;
+    schemas: {
+        SuccessResponse: {
+            success: boolean;
+        };
+    };
     responses: never;
     parameters: never;
     requestBodies: never;
@@ -2387,9 +2392,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        success: boolean;
-                    };
+                    "application/json": components["schemas"]["SuccessResponse"];
                 };
             };
         };
@@ -2420,9 +2423,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        success: boolean;
-                    };
+                    "application/json": components["schemas"]["SuccessResponse"];
                 };
             };
         };
@@ -3141,6 +3142,28 @@ export interface operations {
             };
         };
     };
+    deleteCampaign: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                campaignId: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Campaign deleted successfully */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": Record<string, never>;
+                };
+            };
+        };
+    };
     scheduleCampaign: {
         parameters: {
             query?: never;
@@ -3325,9 +3348,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        success: boolean;
-                    };
+                    "application/json": components["schemas"]["SuccessResponse"];
                 };
             };
         };
@@ -3477,9 +3498,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        success: boolean;
-                    };
+                    "application/json": components["schemas"]["SuccessResponse"];
                 };
             };
         };
@@ -3510,9 +3529,7 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "application/json": {
-                        success: boolean;
-                    };
+                    "application/json": components["schemas"]["SuccessResponse"];
                 };
             };
         };
@@ -4010,27 +4027,14 @@ export interface operations {
         };
         requestBody?: never;
         responses: {
-            /** @description Delete Webhook */
+            /** @description Webhook deleted successfully */
             200: {
                 headers: {
                     [name: string]: unknown;
                 };
                 content: {
                     "application/json": {
-                        id: string;
-                        url: string;
-                        description: string | null;
-                        eventTypes: ("contact.created" | "contact.updated" | "contact.deleted" | "domain.created" | "domain.verified" | "domain.updated" | "domain.deleted" | "email.queued" | "email.sent" | "email.delivery_delayed" | "email.delivered" | "email.bounced" | "email.rejected" | "email.rendering_failure" | "email.complained" | "email.failed" | "email.cancelled" | "email.suppressed" | "email.opened" | "email.clicked")[];
-                        status: string;
-                        secret: string;
-                        apiVersion: string | null;
-                        consecutiveFailures: number;
-                        lastSuccessAt: string | null;
-                        lastFailureAt: string | null;
-                        createdAt: string;
-                        updatedAt: string;
-                        teamId: string;
-                        createdByUserId: string | null;
+                        success: boolean;
                     };
                 };
             };
